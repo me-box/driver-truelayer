@@ -207,7 +207,7 @@ function setSettings(settings) {
 }
 
 function save(datasourceid, data) {
-    console.log("Saving monzo event::", data.text);
+    console.log("Saving TrueLayer event::", data.text);
     json = {"data": data};
     tsc.Write(datasourceid, data)
     .then((resp) => {
