@@ -19,8 +19,6 @@
 		"type": "git",
 		"url": "git+https://github.com/me-box/driver-truelayer.git"
 	},
-	"network-permissions": [
-	],
 	"external-whitelist": [
 		{
 			"urls": [
@@ -29,9 +27,21 @@
 			"description": "Access truelayer API"
 		}
 	],
-	"hardware-permissions": [
-	],
 	"resource-requirements": {
 		"store": "core-store"
-	}
+	},
+	"provides": [
+		{
+			"data-source-type": "truelayerUserBalance",
+			"description": "TrueLayer user Balance data",
+			"store-type": "tsblob",
+			"schema": {}
+		},
+		{
+			"data-source-type": "truelayerUserTransactions",
+			"description": "TrueLayer user Transactions data",
+			"store-type": "tsblob",
+			"schema": {}
+		}
+	]
 }
