@@ -1,0 +1,52 @@
+{
+  "name": "driver-truelayer",
+  "version": "1.0.0",
+  "description": "A Databox driver to stream bank data through True Layer",
+  "config": {
+    "registry": "localhost:5000"
+  },
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha",
+    "start": "node ./src/main.js",
+    "build": "docker build -t databox/driver-motruelayernzo .",
+    "deploy": "docker tag databox/driver-truelayer $npm_package_config_registry/driver-truelayer && docker push $npm_package_config_registry/driver-truelayer",
+    "build-arm": "docker build -f Dockerfile-arm -t databox/driver-truelayer-arm .",
+    "deploy-arm": "docker tag databox/driver-truelayer-arm $npm_package_config_registry/driver-truelayer-arm && docker push $npm_package_config_registry/driver-truelayer-arm",
+    "clean": "node ./node_modules/modclean/bin/modclean.js -p ./node_modules/ -r",
+    "getshell": "docker exec -i -t driver-truelayer /bin/bash",
+    "kill": "docker kill driver-truelayer",
+    "attach": "docker attach driver-truelayer",
+    "shell": "docker run -i -t databox/driver-truelayer /bin/bash",
+    "local": "docker run -i -t databox/driver-truelayer"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minoskt/driver-truelayer.git"
+  },
+  "keywords": [
+    "Databox",
+    "truelayer",
+    "stream"
+  ],
+  "author": "Kleomenis Katevas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/minoskt/driver-truelayer/issues"
+  },
+  "homepage": "https://github.com/minoskt/driver-truelayer#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "modclean": "^2.1.2",
+    "node-databox": "^0.8.1",
+    "oauth": "^0.9.15",
+    "pug": "^2.0.3",
+    "request": "^2.88.0",
+    "truelayer-client": "^1.0.9"
+  },
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "mocha": "^5.2.0",
+    "supertest": "^3.1.0"
+  }
+}
