@@ -9,7 +9,7 @@ const express = require("express");
 const request = require("request");
 const bodyParser = require("body-parser");
 
-// True Layer
+// TrueLayer
 const {AuthAPIClient, DataAPIClient} = require("truelayer-client");
 const TrueLayerDefaultSettings = require('./truelayer-secret.json');
 const client = new AuthAPIClient(TrueLayerDefaultSettings);
@@ -30,14 +30,22 @@ let timer = setInterval(timer_callback, 1000 * 60);  // per minute
 let next_token_refresh = null;
 let next_data_refresh = null;
 
-// Step 1: Auth with True Layer (TODO: Add a screen explaining this first)
+// Step 1: Auth with TrueLayer
 app.get('/ui', function (req, res) {
     getSettings()
     .then((settings) => {
-        const { client_id, redirect_uri } = settings;
-
+        const { redirect_uri } = settings;
         const authURL = client.getAuthUrl(redirect_uri, scopes, "foobar");
-        res.redirect(authURL);
+
+        // list them to the user
+        res.type('html');
+        // TODO: Use a pug template instead
+        res.send(`
+        <h1>TrueLayer Driver Authentication</h1>
+        <form action="${authURL}">
+            <button>Authorise</button>
+        </form>
+        `);
     });
 });
 
@@ -70,7 +78,7 @@ app.get('/configure', (req, res) => {
         // list them to the user
         res.type('html');
         // TODO: Use a pug template instead
-        res.write('<h1>True Layer Driver Configuration</h1>');
+        res.write('<h1>TrueLayer Driver Configuration</h1>');
         res.write('<p>Please choose the account you want to monitor and its refresh interval:</p>');
         res.write('<form action="/saveConfiguration">');
         res.write('Accounts:<br>');
