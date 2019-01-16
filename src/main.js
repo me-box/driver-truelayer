@@ -122,9 +122,6 @@ app.get("/status", function (req, res) {
     res.send("active");
 });
 
-// What is that???
-module.exports = app;
-
 let tsc = databox.NewTimeSeriesBlobClient(DATABOX_ZMQ_ENDPOINT, false);
 let kvc = databox.NewKeyValueClient(DATABOX_ZMQ_ENDPOINT, false);
 
