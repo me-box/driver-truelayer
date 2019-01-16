@@ -37,7 +37,6 @@ app.get('/ui', function (req, res) {
         const { redirect_uri } = settings;
         const authURL = client.getAuthUrl(redirect_uri, scopes, "foobar");
 
-        // list them to the user
         res.type('html');
         // TODO: Use a pug template instead
         res.send(`
@@ -66,7 +65,7 @@ app.get('/truelayer-redirect', (req, res) => {
 });
 
 // Step 3: Configure Driver
-// (i.e. choose the Account you want to monitor)
+// (i.e. choose the Account you want to monitor; only one at the moment)
 app.get('/configure', async (req, res) => {
     getSettings()
     .then( async (settings) => {
