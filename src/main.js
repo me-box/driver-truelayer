@@ -5,6 +5,7 @@
 
 // General
 const https = require('https');
+const http = require("http");
 const express = require("express");
 const request = require("request");
 const bodyParser = require("body-parser");
@@ -18,12 +19,11 @@ const redirect_uri = "http://localhost:5000/truelayer-redirect";
 
 // DataBox
 const databox = require('node-databox');
-const DATABOX_ZMQ_ENDPOINT = process.env.DATABOX_ZMQ_ENDPOINT;
-const credentials = databox.getHttpsCredentials();
-
+const DATABOX_ZMQ_ENDPOINT = process.env.DATABOX_ZMQ_ENDPOINT || "tcp://127.0.0.1:5555";
+const DATABOX_TESTING = !(process.env.DATABOX_VERSION);
 const PORT = process.env.port || '8080';
-const app = express();
 
+const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 
 let timer = setInterval(timer_callback, 1000 * 60);  // per minute
@@ -52,7 +52,7 @@ app.get('/ui', function (req, res) {
 // Step 2: Get token
 app.get('/truelayer-redirect', (req, res) => {
     getSettings()
-    .then((settings) => {
+    .then( async (settings) => {
         const { client_id, client_secret, redirect_uri } = settings;
         const { code } = req.query.code;
         const tokens = await client.exchangeCodeForToken(redirect_uri, code);
@@ -67,9 +67,9 @@ app.get('/truelayer-redirect', (req, res) => {
 
 // Step 3: Configure Driver
 // (i.e. choose the Account you want to monitor)
-app.get('/configure', (req, res) => {
+app.get('/configure', async (req, res) => {
     getSettings()
-    .then((settings) => {
+    .then( async (settings) => {
         const { tokens } = settings;
 
         // get all accounts
@@ -123,8 +123,7 @@ app.get("/status", function (req, res) {
     res.send("active");
 });
 
-console.log("[Creating server]");
-https.createServer(credentials, app).listen(PORT);
+// What is that???
 module.exports = app;
 
 let tsc = databox.NewTimeSeriesBlobClient(DATABOX_ZMQ_ENDPOINT, false);
@@ -221,7 +220,7 @@ function save(datasourceid, data) {
 // Should be called periodically to refresh the token before it expires
 function refresh_token() {
     getSettings()
-    .then((settings) => {
+    .then( async (settings) => {
         const { tokens } = settings;
 
         await client.refresh_token(tokens);
@@ -259,7 +258,7 @@ function timer_callback() {
 
 function refresh_balance() {
     getSettings()
-    .then((settings) => {
+    .then( async (settings) => {
         const { tokens } = settings;
 
         const balance = await DataAPIClient.getBalance(tokens.access_token);
@@ -269,10 +268,20 @@ function refresh_balance() {
 
 function refresh_transactions() {
     getSettings()
-    .then((settings) => {
+    .then( async (settings) => {
         const { tokens } = settings;
 
         const transactions = await DataAPIClient.getTransactions(tokens.access_token);
         save('truelayerUserTransactions', transactions);
     });
+}
+
+//when testing, we run as http, (to prevent the need for self-signed certs etc);
+if (DATABOX_TESTING) {
+    console.log("[Creating TEST http server]", PORT);
+    http.createServer(app).listen(PORT);
+} else {
+    console.log("[Creating https server]", PORT);
+    const credentials = databox.getHttpsCredentials();
+    https.createServer(credentials, app).listen(PORT);
 }
