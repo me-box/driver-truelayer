@@ -7,6 +7,7 @@ const http = require('http');
 const express = require('express');
 //const request = require('request');
 const bodyParser = require('body-parser');
+const nonce = require('nonce-generator');
 
 // TrueLayer
 const { AuthAPIClient, DataAPIClient } = require('truelayer-client');
@@ -33,7 +34,7 @@ app.get('/ui', function (req, res) {
   getSettings()
     .then((settings) => {
       const { redirect_uri } = settings;
-      const authURL = client.getAuthUrl(redirect_uri, permission_scopes, 'foobar');
+      const authURL = client.getAuthUrl(redirect_uri, permission_scopes, nonce(8));
 
       res.type('html');
       // TODO: Use a pug template instead
