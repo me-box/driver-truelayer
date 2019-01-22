@@ -14,7 +14,7 @@ const { AuthAPIClient, DataAPIClient } = require('truelayer-client');
 const TrueLayerDefaultSettings = require('./truelayer-secret.json');
 const client = new AuthAPIClient(TrueLayerDefaultSettings);
 const permission_scopes = ['info', 'accounts', 'balance', 'transactions', 'offline_access', 'cards'];
-const redirect_uri = 'https://localhost:5000/truelayer-redirect';
+const redirect_uri = 'https://localhost/truelayer-redirect';
 
 // DataBox
 const databox = require('node-databox');
