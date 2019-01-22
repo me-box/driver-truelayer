@@ -218,7 +218,7 @@ function refresh_token() {
   getSettings()
     .then(async (settings) => {
       const { tokens } = settings;
-
+      console.log('[refresh_token]');
       await client.refresh_token(tokens);
     });
 }
@@ -228,6 +228,8 @@ function timer_callback() {
   getSettings()
     .then((settings) => {
       const { refresh_interval, tokens } = settings;
+
+      console.log('[timer_callback]');
 
       // current datetime
       var now = new Date();
@@ -257,6 +259,8 @@ function refresh_balance() {
     .then(async (settings) => {
       const { tokens } = settings;
 
+      console.log('[refresh_balance]');
+
       const balance = await DataAPIClient.getBalance(tokens.access_token);
       save('truelayerUserBalance', balance);
     });
@@ -266,6 +270,8 @@ function refresh_transactions() {
   getSettings()
     .then(async (settings) => {
       const { tokens } = settings;
+
+      console.log('[refresh_transactions]');
 
       const transactions = await DataAPIClient.getTransactions(tokens.access_token);
       save('truelayerUserTransactions', transactions);
