@@ -13,7 +13,7 @@ const nonce = require('nonce-generator');
 const { AuthAPIClient, DataAPIClient } = require('truelayer-client');
 const TrueLayerDefaultSettings = require('./truelayer-secret.json');
 const client = new AuthAPIClient(TrueLayerDefaultSettings);
-const permission_scopes = ['info', 'accounts', 'balance', 'transactions', 'offline_access', 'cards'];
+const permission_scopes = ['accounts', 'balance', 'transactions', 'offline_access'];
 const redirect_uri = 'https://localhost/driver-truelayer/ui/truelayer-redirect';
 
 // DataBox
