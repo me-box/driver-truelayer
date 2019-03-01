@@ -14,7 +14,6 @@ const { AuthAPIClient, DataAPIClient } = require('truelayer-client');
 const TrueLayerDefaultSettings = require('./truelayer-secret.json');
 const client = new AuthAPIClient(TrueLayerDefaultSettings);
 const permission_scopes = ['accounts', 'balance', 'transactions', 'offline_access'];
-const redirect_uri = 'https://localhost/driver-truelayer/ui/truelayer-redirect';
 
 // DataBox
 const databox = require('node-databox');
@@ -179,7 +178,6 @@ function getSettings() {
         if (Object.keys(settings).length === 0) {
           //return defaults
           const settings = TrueLayerDefaultSettings;
-          settings.redirect_uri = redirect_uri;
           console.log('[getSettings] using defaults Using ----> ', settings);
           resolve(settings);
           return;
@@ -189,7 +187,6 @@ function getSettings() {
       })
       .catch((err) => {
         const settings = TrueLayerDefaultSettings;
-        settings.redirect_uri = redirect_uri;
         console.log('[getSettings] using defaults Using ----> ', settings);
         resolve(settings);
       });
