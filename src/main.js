@@ -14,7 +14,7 @@ const { AuthAPIClient, DataAPIClient } = require('truelayer-client');
 const TrueLayerDefaultSettings = require('./truelayer-secret.json');
 const client = new AuthAPIClient(TrueLayerDefaultSettings);
 const permission_scopes = ['info', 'accounts', 'balance', 'transactions', 'offline_access', 'cards'];
-const redirect_uri = 'https://localhost/truelayer-redirect';
+const redirect_uri = 'https://localhost/driver-truelayer/ui/truelayer-redirect';
 
 // DataBox
 const databox = require('node-databox');
@@ -48,7 +48,7 @@ app.get('/ui', function (req, res) {
 });
 
 // Step 2: Get token
-app.get('/truelayer-redirect', (req, res) => {
+app.get('/ui/truelayer-redirect', (req, res) => {
   getSettings()
     .then(async (settings) => {
       const { client_id, client_secret, redirect_uri } = settings;
@@ -58,14 +58,14 @@ app.get('/truelayer-redirect', (req, res) => {
 
       setSettings(settings)
         .then(() => {
-          res.redirect('/configure');
+          res.redirect('/ui/configure');
         });
     });
 });
 
 // Step 3: Configure Driver
 // (i.e. choose the Account you want to monitor; only one at the moment)
-app.get('/configure', async (req, res) => {
+app.get('/ui/configure', async (req, res) => {
   getSettings()
     .then(async (settings) => {
       const { tokens } = settings;
@@ -78,7 +78,7 @@ app.get('/configure', async (req, res) => {
       // TODO: Use a pug template instead
       res.write('<h1>TrueLayer Driver Configuration</h1>');
       res.write('<p>Please choose the account you want to monitor and its refresh interval:</p>');
-      res.write('<form action="/saveConfiguration">');
+      res.write('<form action="/ui/saveConfiguration">');
       res.write('Accounts:<br>');
 
       for(const account of accounts.results) {
@@ -94,7 +94,7 @@ app.get('/configure', async (req, res) => {
 });
 
 // Step 4: Parse response and save configuration
-app.get('/saveConfiguration', function (req, res) {
+app.get('/ui/saveConfiguration', function (req, res) {
   const newAccount = req.query.account;
   const newRefreshInterval = req.query.refresh_interval;
   console.log(newAccount);
