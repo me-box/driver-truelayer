@@ -39,10 +39,15 @@ app.get('/ui', function (req, res) {
       res.type('html');
       // TODO: Use a pug template instead
       res.send(`
-        <h1>TrueLayer Driver Authentication</h1>
-        <form action="${authURL}">
+        <!doctype html>
+        <html lang="en">
+        <body>
+          <h1>TrueLayer Driver Authentication</h1>
+          <form action="${authURL}">
             <button>Authorise</button>
-        </form>
+          </form>
+        </body>
+        </html>
       `);
     });
 });
@@ -76,6 +81,9 @@ app.get('/ui/configure', async (req, res) => {
       // list them to the user
       res.type('html');
       // TODO: Use a pug template instead
+      res.write('<!doctype html>');
+      res.write('<html lang="en">');
+      res.write('<body>');
       res.write('<h1>TrueLayer Driver Configuration</h1>');
       res.write('<p>Please choose the account you want to monitor and its refresh interval:</p>');
       res.write('<form action="/ui/saveConfiguration">');
@@ -89,7 +97,9 @@ app.get('/ui/configure', async (req, res) => {
       }
       res.write('Refresh Interval (minutes): <input type="text" name="refresh_interval" value="30"><br><br>');
       res.write('<button>Save Configuration</button>');
-      res.end('</form>');
+      res.write('</form>');
+      res.write('</body>');
+      res.end('</html>');
     });
 });
 
