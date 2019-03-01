@@ -42,8 +42,7 @@ app.get('/ui', function (req, res) {
         <html lang="en">
         <body>
           <h1>TrueLayer Driver Authentication</h1>
-          <form action="${authURL}">
-            <button>Authorise</button>
+          <a href="${authURL}">Authorize</a>
           </form>
         </body>
         </html>
