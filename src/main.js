@@ -32,8 +32,8 @@ let next_data_refresh = null;
 app.get('/ui', function (req, res) {
   getSettings()
     .then((settings) => {
-      const { redirect_uri } = settings;
-      const authURL = client.getAuthUrl(redirect_uri, permission_scopes, nonce(8));
+      const { redirect_url } = settings;
+      const authURL = client.getAuthUrl(redirect_url, permission_scopes, nonce(8));
 
       res.type('html');
       // TODO: Use a pug template instead
@@ -55,9 +55,9 @@ app.get('/ui', function (req, res) {
 app.get('/ui/truelayer-redirect', (req, res) => {
   getSettings()
     .then(async (settings) => {
-      const { client_id, client_secret, redirect_uri } = settings;
+      const { client_id, client_secret, redirect_url } = settings;
       const { code } = req.query.code;
-      const tokens = await client.exchangeCodeForToken(redirect_uri, code);
+      const tokens = await client.exchangeCodeForToken(redirect_url, code);
       settings.tokens = tokens;
 
       setSettings(settings)
