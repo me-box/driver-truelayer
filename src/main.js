@@ -244,7 +244,7 @@ function timer_callback() {
         refresh_token(tokens);
 
         // plan next refresh
-        next_token_refresh = Date().setMinutes(now.getMinutes() + 30); // 30 mins
+        next_token_refresh = new Date().setMinutes(now.getMinutes() + 30); // 30 mins
       }
 
       if (next_data_refresh == null ||
@@ -253,7 +253,7 @@ function timer_callback() {
         refresh_transactions();
 
         // plan next refresh
-        next_data_refresh = Date().setMinutes(now.getMinutes() + refresh_interval);
+        next_data_refresh = new Date().setMinutes(now.getMinutes() + refresh_interval);
       }
     });
 }
