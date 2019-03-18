@@ -223,7 +223,7 @@ function refresh_token() {
     .then(async (settings) => {
       const { tokens } = settings;
       console.log('[refresh_token]');
-      await client.refresh_token(tokens);
+      await client.refreshAccessToken(tokens);
     });
 }
 
