@@ -57,7 +57,7 @@ app.get('/ui/truelayer-redirect', (req, res) => {
   getSettings()
     .then(async (settings) => {
       const { redirect_url } = settings;
-      const { code } = req.query.code;
+      const code = req.query.code;
       const tokens = await client.exchangeCodeForToken(redirect_url, code);
       settings.tokens = tokens;
 
