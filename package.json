@@ -36,9 +36,9 @@
   "homepage": "https://github.com/minoskt/driver-truelayer#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "express": "^4.16.3",
+    "express": "^4.16.4",
     "modclean": "^2.1.2",
-    "node-databox": "^0.9.0",
+    "node-databox": "^0.10.6",
     "nonce-generator": "^1.0.2",
     "oauth": "^0.9.15",
     "pug": "^2.0.3",
@@ -48,6 +48,6 @@
   "devDependencies": {
     "assert": "^1.4.1",
     "mocha": "^5.2.0",
-    "supertest": "^3.1.0"
+    "supertest": "^3.4.2"
   }
 }

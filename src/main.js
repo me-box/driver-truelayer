@@ -17,9 +17,12 @@ const permission_scopes = ['accounts', 'balance', 'transactions', 'offline_acces
 
 // DataBox
 const databox = require('node-databox');
+const DATABOX_ARBITER_ENDPOINT = process.env.DATABOX_ARBITER_ENDPOINT || 'tcp://127.0.0.1:4444';
 const DATABOX_ZMQ_ENDPOINT = process.env.DATABOX_ZMQ_ENDPOINT || 'tcp://127.0.0.1:5555';
 const DATABOX_TESTING = !(process.env.DATABOX_VERSION);
+
 const PORT = process.env.port || '8080';
+const store = databox.NewStoreClient(DATABOX_ZMQ_ENDPOINT, DATABOX_ARBITER_ENDPOINT);
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,13 +39,12 @@ app.get('/ui', function (req, res) {
       const authURL = client.getAuthUrl(redirect_url, permission_scopes, nonce(8));
 
       res.type('html');
-      // TODO: Use a pug template instead
       res.send(`
         <!doctype html>
         <html lang="en">
         <body>
           <h1>TrueLayer Driver Authentication</h1>
-          <a href="${authURL}">Authorize</a>
+          <a href="${authURL}" target="_blank">Authorize</a>
           </form>
         </body>
         </html>
@@ -78,7 +80,6 @@ app.get('/ui/configure', async (req, res) => {
 
       // list them to the user
       res.type('html');
-      // TODO: Use a pug template instead
       res.write(`<!doctype html>
                  <html lang="en">
                  <body>
@@ -130,9 +131,6 @@ app.get('/status', function (req, res) {
   res.send('active');
 });
 
-const tsc = databox.NewTimeSeriesBlobClient(DATABOX_ZMQ_ENDPOINT, false);
-const kvc = databox.NewKeyValueClient(DATABOX_ZMQ_ENDPOINT, false);
-
 const balance = databox.NewDataSourceMetadata();
 balance.Description = 'TrueLayer user Balance data';
 balance.ContentType = 'application/json';
@@ -157,12 +155,12 @@ driverSettings.DataSourceType = 'truelayerSettings';
 driverSettings.DataSourceID = 'truelayerSettings';
 driverSettings.StoreType = 'kv';
 
-tsc.RegisterDatasource(balance)
+store.RegisterDatasource(balance)
   .then(() => {
-    return tsc.RegisterDatasource(transactions);
+    return store.RegisterDatasource(transactions);
   })
   .then(() => {
-    return kvc.RegisterDatasource(driverSettings);
+    return store.RegisterDatasource(driverSettings);
   })
   .catch((err) => {
     console.log('Error registering data source:' + err);
@@ -171,7 +169,7 @@ tsc.RegisterDatasource(balance)
 function getSettings() {
   const datasourceid = 'truelayerSettings';
   return new Promise((resolve, reject) => {
-    kvc.Read(datasourceid, 'settings')
+    store.KV.Read(datasourceid, 'settings')
       .then((settings) => {
         console.log('[getSettings] read response = ', settings);
         if (Object.keys(settings).length === 0) {
@@ -195,7 +193,7 @@ function getSettings() {
 function setSettings(settings) {
   const datasourceid = 'truelayerSettings';
   return new Promise((resolve, reject) => {
-    kvc.Write(datasourceid, 'settings', settings)
+    store.KV.Write(datasourceid, 'settings', settings)
       .then(() => {
         console.log('[setSettings] settings saved', settings);
         resolve(settings);
@@ -207,10 +205,10 @@ function setSettings(settings) {
   });
 }
 
-function save(datasourceid, data) {
+async function save(datasourceid, data) {
   console.log('Saving TrueLayer event::', data.text);
   const json = { data };
-  tsc.Write(datasourceid, json)
+  store.Write(datasourceid, json)
     .then((resp) => {
       console.log('Save got response ', resp);
     })
@@ -290,6 +288,6 @@ if (DATABOX_TESTING) {
   http.createServer(app).listen(PORT);
 } else {
   console.log('[Creating https server]', PORT);
-  const credentials = databox.getHttpsCredentials();
+  const credentials = databox.GetHttpsCredentials();
   https.createServer(credentials, app).listen(PORT);
 }
