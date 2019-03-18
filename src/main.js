@@ -236,7 +236,7 @@ function timer_callback() {
       console.log('[timer_callback]');
 
       // current datetime
-      var now = new Date();
+      const now = new Date();
 
       if (next_token_refresh == null ||
           next_token_refresh < now) {
