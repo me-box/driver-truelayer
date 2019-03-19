@@ -22,7 +22,9 @@
 	"external-whitelist": [
 		{
 			"urls": [
-				"https://auth.truelayer.com"
+				"https://auth.truelayer.com",
+				"https://api.truelayer.com",
+				"https://pay-api.truelayer.com"
 			],
 			"description": "Access truelayer API"
 		}
