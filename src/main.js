@@ -28,7 +28,7 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const timer = setInterval(timer_callback, 1000 * 60);  // per minute
-let next_token_refresh = null;
+//let next_token_refresh = null;
 let next_data_refresh = null;
 
 // Step 1: Auth with TrueLayer
@@ -58,7 +58,11 @@ app.get('/ui/truelayer-redirect', (req, res) => {
     .then(async (settings) => {
       const { redirect_url } = settings;
       const code = req.query.code;
-      const tokens = await client.exchangeCodeForToken(redirect_url, code);
+      const tokens = await client.exchangeCodeForToken(redirect_url, code)
+        .catch((error) => {
+          console.log('TrueLayer Error: ', error);
+          return Promise.reject(new Error(400));
+        });
       settings.tokens = tokens;
 
       setSettings(settings)
@@ -99,6 +103,10 @@ app.get('/ui/configure', async (req, res) => {
                </form>
                </body>
                </html>`);
+    })
+    .catch((error) => {
+      console.log('[configure] Error ', error);
+      res.status(400).send({ statusCode: 400, body: 'error in configuration.' });
     });
 });
 
@@ -231,21 +239,21 @@ function timer_callback() {
 
   getSettings()
     .then((settings) => {
-      const { refresh_interval, tokens } = settings;
+      const { refresh_interval } = settings;
 
       console.log('[timer_callback]');
 
       // current datetime
       const now = new Date();
 
-      if (next_token_refresh == null ||
-          next_token_refresh < now) {
+      // if (next_token_refresh == null ||
+      //     next_token_refresh < now) {
 
-        refresh_token(tokens);
+      //   refresh_token(tokens);
 
-        // plan next refresh
-        next_token_refresh = new Date().setMinutes(now.getMinutes() + 30); // 30 mins
-      }
+      //   // plan next refresh
+      //   next_token_refresh = new Date().setMinutes(now.getMinutes() + 30); // 30 mins
+      // }
 
       if (next_data_refresh == null ||
           next_data_refresh < now) {
