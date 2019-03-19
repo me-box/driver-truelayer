@@ -89,7 +89,7 @@ app.get('/ui/configure', async (req, res) => {
                  <body>
                  <h1>TrueLayer Driver Configuration</h1>
                  <p>Please choose the account you want to monitor and its refresh interval:</p>
-                 <form action="/ui/saveConfiguration">
+                 <form action="saveConfiguration">
                  Accounts:<br>`);
 
       for(const account of accounts.results) {
