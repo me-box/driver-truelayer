@@ -218,7 +218,7 @@ function setSettings(settings) {
 async function save(datasourceid, data) {
   console.log('Saving TrueLayer event::', data.text);
   const json = { data };
-  store.Write(datasourceid, json)
+  store.TSBlob.Write(datasourceid, json)
     .then((resp) => {
       console.log('Save got response ', resp);
     })
