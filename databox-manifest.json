@@ -23,10 +23,9 @@
 		{
 			"urls": [
 				"https://auth.truelayer.com",
-				"https://api.truelayer.com",
-				"https://pay-api.truelayer.com"
+				"https://api.truelayer.com"
 			],
-			"description": "Access truelayer API"
+			"description": "Access TrueLayer's API"
 		}
 	],
 	"resource-requirements": {
