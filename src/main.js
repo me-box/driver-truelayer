@@ -128,6 +128,8 @@ app.get('/ui/saveConfiguration', function (req, res) {
       // Start/Restart monitoring with new settings
       refresh_balance();
       refresh_transactions();
+      res.type('html');
+      res.end('all good!');
     })
     .catch((error) => {
       console.log('[saveConfiguration] Error ', error);
@@ -269,11 +271,11 @@ function timer_callback() {
 function refresh_balance() {
   getSettings()
     .then(async (settings) => {
-      const { tokens } = settings;
+      const { tokens, account_id } = settings;
 
       console.log('[refresh_balance]');
 
-      const balance = await DataAPIClient.getBalance(tokens.access_token);
+      const balance = await DataAPIClient.getBalance(tokens.access_token, account_id);
       save('truelayerUserBalance', balance);
     });
 }
@@ -281,11 +283,11 @@ function refresh_balance() {
 function refresh_transactions() {
   getSettings()
     .then(async (settings) => {
-      const { tokens } = settings;
+      const { tokens, account_id } = settings;
 
       console.log('[refresh_transactions]');
 
-      const transactions = await DataAPIClient.getTransactions(tokens.access_token);
+      const transactions = await DataAPIClient.getTransactions(tokens.access_token, account_id);
       save('truelayerUserTransactions', transactions);
     });
 }
