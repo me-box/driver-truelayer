@@ -38,6 +38,7 @@ app.get('/ui', function (req, res) {
       const { redirect_url } = settings;
       const authURL = client.getAuthUrl(redirect_url, permission_scopes, nonce(8));
 
+      // Used 'target=_blank' since TrueLayer doesn't support inner html.
       res.type('html');
       res.send(`
         <!doctype html>
@@ -129,7 +130,15 @@ app.get('/ui/saveConfiguration', function (req, res) {
       refresh_balance();
       refresh_transactions();
       res.type('html');
-      res.end('all good!');
+      res.end(`
+        <!doctype html>
+        <html lang="en">
+        <body>
+          <h1>TrueLayer is now configured.</h1>
+          </form>
+        </body>
+        </html>
+      `);
     })
     .catch((error) => {
       console.log('[saveConfiguration] Error ', error);
@@ -194,6 +203,7 @@ function getSettings() {
       })
       .catch((err) => {
         const settings = TrueLayerDefaultSettings;
+        console.log('Error getting settings', err);
         console.log('[getSettings] using defaults Using ----> ', settings);
         resolve(settings);
       });
@@ -216,7 +226,7 @@ function setSettings(settings) {
 }
 
 async function save(datasourceid, data) {
-  console.log('Saving TrueLayer event::', data.text);
+  console.log('Saving TrueLayer event::', data);
   const json = { data };
   store.TSBlob.Write(datasourceid, json)
     .then((resp) => {
