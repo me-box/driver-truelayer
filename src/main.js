@@ -198,7 +198,8 @@ function getSettings() {
           resolve(settings);
           return;
         }
-        console.log('[getSettings]', settings);
+
+        //console.log('[getSettings]', settings);
         resolve(settings);
       })
       .catch((err) => {
@@ -237,8 +238,8 @@ async function save(datasourceid, data) {
     });
 }
 
-// Should be called periodically to refresh the token before it expires
-function refresh_token() {
+// Will check token validity and if it is due to expire, it will refresh it
+function validate_token() {
   getSettings()
     .then(async (settings) => {
       const { tokens } = settings;
@@ -248,27 +249,16 @@ function refresh_token() {
 }
 
 function timer_callback() {
-
   getSettings()
     .then((settings) => {
       const { refresh_interval } = settings;
 
-      console.log('[timer_callback]');
-
-      // current datetime
+      // check with current datetime
       const now = new Date();
-
-      // if (next_token_refresh == null ||
-      //     next_token_refresh < now) {
-
-      //   refresh_token(tokens);
-
-      //   // plan next refresh
-      //   next_token_refresh = new Date().setMinutes(now.getMinutes() + 30); // 30 mins
-      // }
-
       if (next_data_refresh == null ||
           next_data_refresh < now) {
+
+        // refresh
         refresh_balance();
         refresh_transactions();
 
