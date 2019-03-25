@@ -27,8 +27,8 @@ const store = databox.NewStoreClient(DATABOX_ZMQ_ENDPOINT, DATABOX_ARBITER_ENDPO
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const token_refresh_interval = 30;  // in minutes
 const timer = setInterval(timer_callback, 1000 * 60);  // per minute
-//let next_token_refresh = null;
 let next_data_refresh = null;
 
 // Step 1: Auth with TrueLayer
@@ -65,6 +65,8 @@ app.get('/ui/truelayer-redirect', (req, res) => {
           return Promise.reject(new Error(400));
         });
       settings.tokens = tokens;
+      const now = new Date();
+      settings.tokens.expiration_date = new Date().setMinutes(now.getMinutes() + token_refresh_interval);
 
       setSettings(settings)
         .then(() => {
@@ -76,6 +78,7 @@ app.get('/ui/truelayer-redirect', (req, res) => {
 // Step 3: Configure Driver
 // (i.e. choose the Account you want to monitor; only one at the moment)
 app.get('/ui/configure', async (req, res) => {
+  await validate_token();
   getSettings()
     .then(async (settings) => {
       const { tokens } = settings;
@@ -239,16 +242,29 @@ async function save(datasourceid, data) {
 }
 
 // Will check token validity and if it is due to expire, it will refresh it
-function validate_token() {
+async function validate_token() {
   getSettings()
     .then(async (settings) => {
       const { tokens } = settings;
-      console.log('[refresh_token]');
-      await client.refreshAccessToken(tokens);
+
+      // check with current datetime
+      const now = new Date();
+      if (tokens.expiration_date < now) {
+        console.log('[refreshing token]');
+        const new_token = await client.refreshAccessToken(tokens.refresh_token)
+          .catch((error) => {
+            console.log('TrueLayer Error: ', error);
+            return Promise.reject(new Error(400));
+          });
+        settings.tokens = new_token;
+        settings.tokens.expiration_date = new Date().setMinutes(now.getMinutes() + token_refresh_interval);
+        await setSettings(settings);
+      }  // else, just continue
     });
 }
 
-function timer_callback() {
+async function timer_callback() {
+  await validate_token();
   getSettings()
     .then((settings) => {
       const { refresh_interval } = settings;
