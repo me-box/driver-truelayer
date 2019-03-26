@@ -300,12 +300,18 @@ function refresh_balance() {
 function refresh_transactions() {
   getSettings()
     .then(async (settings) => {
-      const { tokens, account_id } = settings;
+      const { tokens, account_id, retrieve_from } = settings;
 
-      console.log('[refresh_transactions]');
+      // save current datetime
+      const new_retrieve_from = new Date();
 
-      const transactions = await DataAPIClient.getTransactions(tokens.access_token, account_id);
+      console.log('Refreshing transactions from: ' + retrieve_from);
+      const transactions = await DataAPIClient.getTransactions(tokens.access_token, account_id, retrieve_from);
       save('truelayerUserTransactions', transactions);
+
+      // save datetime for next refresh
+      settings.retrieve_from = new_retrieve_from;
+      setSettings(settings);
     });
 }
 
