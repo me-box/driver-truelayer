@@ -129,6 +129,7 @@ app.get('/ui/saveConfiguration', function (req, res) {
       return setSettings(settings);
     })
     .then((settings) => {
+
       // Start/Restart monitoring with new settings
       refresh_balance();
       refresh_transactions();
@@ -197,7 +198,7 @@ function getSettings() {
         if (Object.keys(settings).length === 0) {
           //return defaults
           const settings = TrueLayerDefaultSettings;
-          console.log('[getSettings] using defaults Using ----> ', settings);
+          //console.log('[getSettings] using defaults Using ----> ', settings);
           resolve(settings);
           return;
         }
@@ -219,7 +220,7 @@ function setSettings(settings) {
   return new Promise((resolve, reject) => {
     store.KV.Write(datasourceid, 'settings', settings)
       .then(() => {
-        console.log('[setSettings] settings saved', settings);
+        //console.log('[setSettings] settings saved', settings);
         resolve(settings);
       })
       .catch((err) => {
