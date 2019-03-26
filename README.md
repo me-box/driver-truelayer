@@ -10,7 +10,7 @@ If you wish to use this driver with your own TrueLayer account then:
 
 - Sign up in https://truelayer.com and log in.
 - Create a new app and set the redirect_url to https://127.0.0.1/driver-truelayer/ui/truelayer-redirect.
-- Copy and paste `client_id`, `client_secret` and `redirect_url` into the driver and click Authenticate with TrueLayer.
+- Copy and paste `client_id` and `client_secret` into the driver and click Authenticate with TrueLayer.
 - In the driver settings, choose the bank account you wish to monitor and the Refresh Interval (in minutes).
 
 
