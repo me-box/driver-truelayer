@@ -17,6 +17,8 @@ try {
   TrueLayerDefaultSettings = require('./truelayer-secret.json');
 } catch (e) {
   TrueLayerDefaultSettings = {
+    'client_id': '',
+    'client_secret': '',
     'redirect_url': 'https://127.0.0.1/driver-truelayer/ui/truelayer-redirect',
   };
 }
