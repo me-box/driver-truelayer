@@ -8,12 +8,20 @@ const express = require('express');
 //const request = require('request');
 const bodyParser = require('body-parser');
 const nonce = require('nonce-generator');
+const fs = require('fs');
 
 // TrueLayer
 const { AuthAPIClient, DataAPIClient } = require('truelayer-client');
-const TrueLayerDefaultSettings = require('./truelayer-secret.json');
-const client = new AuthAPIClient(TrueLayerDefaultSettings);
+let TrueLayerDefaultSettings = {};
+try {
+  TrueLayerDefaultSettings = require('./truelayer-secret.json');
+} catch (e) {
+  TrueLayerDefaultSettings = {
+    'redirect_url': 'https://127.0.0.1/driver-truelayer/ui/truelayer-redirect',
+  };
+}
 const permission_scopes = ['accounts', 'balance', 'transactions', 'offline_access'];
+let client;
 
 // DataBox
 const databox = require('node-databox');
@@ -31,29 +39,52 @@ const token_refresh_interval = 30;  // in minutes
 const timer = setInterval(timer_callback, 1000 * 60);  // per minute
 let next_data_refresh = null;
 
+// Load page templates
+const ui_template = fs.readFileSync('src/views/ui.html', 'utf8');
+const authenticate_template = fs.readFileSync('src/views/authenticate.html', 'utf8');
+const configure_template = fs.readFileSync('src/views/configure.html', 'utf8');
+const saveConfiguration_template = fs.readFileSync('src/views/saveConfiguration.html', 'utf8');
+
+
 // Step 1: Auth with TrueLayer
 app.get('/ui', function (req, res) {
   getSettings()
     .then((settings) => {
-      const { redirect_url } = settings;
+      const { client_id, client_secret, redirect_url } = settings;
+      res.type('html');
+      const html = ui_template
+        .replace('__CLIENT_ID__', client_id)
+        .replace('__CLIENT_SECRET__', client_secret)
+        .replace('__REDIRECT_URL__', redirect_url);
+      res.send(html);
+    });
+});
+
+// Step 2: Auth with TrueLayer
+app.get('/ui/authenticate', function (req, res) {
+  getSettings()
+    .then((settings) => {
+      const { client_id, client_secret, redirect_url } = req.query;
+
+      // save into settings
+      settings.client_id = client_id;
+      settings.client_secret = client_secret;
+      settings.redirect_url = redirect_url;
+      setSettings(settings);
+
+      client = new AuthAPIClient(settings);
       const authURL = client.getAuthUrl(redirect_url, permission_scopes, nonce(8));
 
       // Used 'target=_blank' since TrueLayer doesn't support inner html.
       res.type('html');
-      res.send(`
-        <!doctype html>
-        <html lang="en">
-        <body>
-          <h1>TrueLayer Driver Authentication</h1>
-          <a href="${authURL}" target="_blank">Authorize</a>
-          </form>
-        </body>
-        </html>
-      `);
+      console.log(authenticate_template);
+      const html = authenticate_template
+        .replace('__AUTH_URL__', authURL);
+      res.send(html);
     });
 });
 
-// Step 2: Get token
+// Step 3: Get token
 app.get('/ui/truelayer-redirect', (req, res) => {
   getSettings()
     .then(async (settings) => {
@@ -75,7 +106,7 @@ app.get('/ui/truelayer-redirect', (req, res) => {
     });
 });
 
-// Step 3: Configure Driver
+// Step 4: Configure Driver
 // (i.e. choose the Account you want to monitor; only one at the moment)
 app.get('/ui/configure', async (req, res) => {
   await validate_token();
@@ -87,26 +118,15 @@ app.get('/ui/configure', async (req, res) => {
       const accounts = await DataAPIClient.getAccounts(tokens.access_token);
 
       // list them to the user
-      res.type('html');
-      res.write(`<!doctype html>
-                 <html lang="en">
-                 <body>
-                 <h1>TrueLayer Driver Configuration</h1>
-                 <p>Please choose the account you want to monitor and its refresh interval:</p>
-                 <form action="saveConfiguration">
-                 Accounts:<br>`);
-
+      let accounts_html = '';
       for(const account of accounts.results) {
         const { account_id, account_type, display_name } = account;
-        res.write(`
-            <input type="radio" name="account" value="${account_id}"> ${display_name} (<i>${account_type}</i>)<br><br>
-            `);
+        accounts_html += `<input type="radio" name="account" value="${account_id}"> ${display_name} (<i>${account_type}</i>)<br><br>`;
       }
-      res.end(`Refresh Interval (minutes): <input type="text" name="refresh_interval" value="30"><br><br>
-               <button>Save Configuration</button>
-               </form>
-               </body>
-               </html>`);
+      res.type('html');
+      const html = configure_template
+        .replace('__ACCOUNTS__', accounts_html);
+      res.send(html);
     })
     .catch((error) => {
       console.log('[configure] Error ', error);
@@ -114,7 +134,7 @@ app.get('/ui/configure', async (req, res) => {
     });
 });
 
-// Step 4: Parse response and save configuration
+// Step 5: Parse response and save configuration
 app.get('/ui/saveConfiguration', function (req, res) {
   const newAccount = req.query.account;
   const newRefreshInterval = req.query.refresh_interval;
@@ -134,15 +154,8 @@ app.get('/ui/saveConfiguration', function (req, res) {
       refresh_balance();
       refresh_transactions();
       res.type('html');
-      res.end(`
-        <!doctype html>
-        <html lang="en">
-        <body>
-          <h1>TrueLayer is now configured.</h1>
-          </form>
-        </body>
-        </html>
-      `);
+      const html = saveConfiguration_template;
+      res.send(html);
     })
     .catch((error) => {
       console.log('[saveConfiguration] Error ', error);
