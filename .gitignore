@@ -76,3 +76,5 @@ typings/
 .fusebox/
 .DS_Store
 src/truelayer-secret.json
+
+*.sublime-project
