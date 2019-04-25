@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/minoskt/driver-truelayer.git"
+    "url": "git+https://github.com/me-box/driver-truelayer.git"
   },
   "keywords": [
     "Databox",
@@ -31,9 +31,9 @@
   "author": "Kleomenis Katevas",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/minoskt/driver-truelayer/issues"
+    "url": "https://github.com/me-box/driver-truelayer/issues"
   },
-  "homepage": "https://github.com/minoskt/driver-truelayer#readme",
+  "homepage": "https://github.com/me-box/driver-truelayer#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
