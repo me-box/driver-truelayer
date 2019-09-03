@@ -75,7 +75,12 @@ app.get('/ui/authenticate', function (req, res) {
       setSettings(settings);
 
       client = new AuthAPIClient(settings);
-      const authURL = client.getAuthUrl(redirect_url, permission_scopes, nonce(8));
+
+      const authURL = client.getAuthUrl({
+        redirectURI: redirect_url,
+        scope: permission_scopes,
+        nonce: nonce(8),
+      });
 
       // Used 'target=_blank' since TrueLayer doesn't support inner html.
       res.type('html');
