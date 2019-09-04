@@ -80,6 +80,7 @@ app.get('/ui/authenticate', function (req, res) {
         redirectURI: redirect_url,
         scope: permission_scopes,
         nonce: nonce(8),
+        enableMock: true, // enable mock/testing provider(s)
       });
 
       // Used 'target=_blank' since TrueLayer doesn't support inner html.
