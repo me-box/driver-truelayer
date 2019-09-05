@@ -181,7 +181,7 @@ balance.ContentType = 'application/json';
 balance.Vendor = 'Databox Inc.';
 balance.DataSourceType = 'truelayerUserBalance';
 balance.DataSourceID = 'truelayerUserBalance';
-balance.StoreType = 'ts';
+balance.StoreType = 'ts/blob';
 
 const transactions = databox.NewDataSourceMetadata();
 transactions.Description = 'TrueLayer user Transactions data';
@@ -189,7 +189,7 @@ transactions.ContentType = 'application/json';
 transactions.Vendor = 'Databox Inc.';
 transactions.DataSourceType = 'truelayerUserTransactions';
 transactions.DataSourceID = 'truelayerUserTransactions';
-transactions.StoreType = 'ts';
+transactions.StoreType = 'ts/blob';
 
 const driverSettings = databox.NewDataSourceMetadata();
 driverSettings.Description = 'TrueLayer driver settings';
