@@ -41,7 +41,7 @@
     "node-databox": "^0.10.6",
     "nonce-generator": "^1.0.2",
     "oauth": "^0.9.15",
-    "pug": "^2.0.3",
+    "pug": "^3.0.1",
     "request": "^2.88.0",
     "truelayer-client": "^1.3.1"
   },
