@@ -36,7 +36,7 @@
   "homepage": "https://github.com/me-box/driver-truelayer#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "modclean": "^2.1.2",
     "node-databox": "^0.10.6",
     "nonce-generator": "^1.0.2",
